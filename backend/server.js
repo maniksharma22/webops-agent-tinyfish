@@ -6,17 +6,15 @@ import { runAgent } from "./agent.js";
 dotenv.config();
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cors());
-
 
 // test route
 app.get("/", (req, res) => {
   res.send("WebOps Agent Server Running");
 });
-
 
 // run agent
 app.post("/run-agent", async (req, res) => {
@@ -46,7 +44,6 @@ app.post("/run-agent", async (req, res) => {
   }
 
 });
-
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

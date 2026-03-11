@@ -79,22 +79,22 @@ These examples demonstrate how AI agents can automate repetitive web workflows.
 ## Project Structure
 
 webops-agent-tinyfish
-│
-├── backend
-│ ├── agent.js
-│ ├── server.js
-│ ├── package.json
-│ └── .env.example
-│
-├── frontend
-│ ├── index.html
-│ ├── package.json
-│ └── src
-│ ├── App.jsx
-│ └── main.jsx
-│
-├── .gitignore
-└── README.md
+|
+|-- backend
+| |-- agent.js
+| |-- server.js
+| |-- package.json
+| |-- .env.example
+|
+|-- frontend
+| |-- index.html
+| |-- package.json
+| |-- src
+| |-- App.jsx
+| |-- main.jsx
+|
+|-- .gitignore
+|-- README.md
 
 ---
 
@@ -168,6 +168,7 @@ Computer Science Engineer
 ## Acknowledgement
 
 This project was developed using the **TinyFish Web Agent API** as part of the **TinyFish Pre-Accelerator Hackathon**.
+
 
 
 

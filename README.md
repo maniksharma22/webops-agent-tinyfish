@@ -102,24 +102,24 @@ webops-agent-tinyfish
 
 ### 1. Clone the Repository
 
-git clone https://github.com/maniksharma22/webops-agent-tinyfish.git
-cd webops-agent-tinyfish
+* git clone https://github.com/maniksharma22/webops-agent-tinyfish.git
+* cd webops-agent-tinyfish
 
 ---
 
 ### 2. Backend Setup
 
-cd backend
-npm install
+* cd backend
+* npm install
 
-Create a `.env` file:
+* Create a `.env` file:
 
-TINYFISH_API_KEY=your_api_key_here
-PORT=3000
+* TINYFISH_API_KEY=your_api_key_here
+* PORT=3000
 
 Run the backend:
 
-npm start
+* npm start
 
 ---
 
@@ -127,9 +127,9 @@ npm start
 
 Open a new terminal:
 
-cd frontend
-npm install
-npm run dev
+* cd frontend
+* npm install
+* npm run dev
 
 Frontend will run at:
 
@@ -139,11 +139,11 @@ http://localhost:5173
 
 ## Deployment
 
-Frontend
-Deploy using **Vercel**
+* Frontend
+* Deploy using **Vercel**
 
-Backend
-Deploy using **Railway**
+* Backend
+* Deploy using **Railway**
 
 After deployment, update the frontend API endpoint to point to the deployed backend.
 
@@ -168,4 +168,5 @@ Computer Science Engineer
 ## Acknowledgement
 
 This project was developed using the **TinyFish Web Agent API** as part of the **TinyFish Pre-Accelerator Hackathon**.
+
 

@@ -8,10 +8,6 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
 app.use(cors({
   origin: "https://webops-agent-tinyfish.vercel.app",
   methods: ["GET", "POST", "OPTIONS"],
@@ -27,9 +23,7 @@ app.get("/", (req, res) => {
 
 // run agent
 app.post("/run-agent", async (req, res) => {
-
   try {
-
     const { url, goal } = req.body;
 
     if (!url || !goal) {
@@ -40,16 +34,16 @@ app.post("/run-agent", async (req, res) => {
     }
 
     const result = await runAgent(url, goal);
-
     res.json(result);
 
   } catch (error) {
-
     res.status(500).json({
       status: "error",
       message: error.message
     });
-
   }
+});
 
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on port ${PORT}`);
 });

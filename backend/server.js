@@ -11,9 +11,8 @@ const PORT = process.env.PORT || 3000;
 app.use(cors({
   origin: "https://webops-agent-tinyfish.vercel.app",
   methods: ["GET", "POST", "OPTIONS"],
-  allowedHeaders: ["Content-Type"],
+  allowedHeaders: ["Content-Type"]
 }));
-app.options("/*", cors());
 
 app.use(express.json());
 

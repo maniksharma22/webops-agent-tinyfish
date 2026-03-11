@@ -8,13 +8,16 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
 app.use(cors({
   origin: "https://webops-agent-tinyfish.vercel.app",
-  methods: ["GET", "POST"],
-  allowedHeaders: ["Content-Type"]
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type"],
 }));
+
 app.options("*", cors());
+
+app.use(express.json());
+
 // test route
 app.get("/", (req, res) => {
   res.send("WebOps Agent Server Running");

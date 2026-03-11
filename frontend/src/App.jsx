@@ -20,7 +20,7 @@ function App() {
 
     try {
 
-      const response = await fetch("http://localhost:3000/run-agent", {
+      const response = await fetch("https://webops-agent-tinyfish-production.up.railway.app/run-agent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url, goal })

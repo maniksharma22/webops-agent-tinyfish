@@ -1,29 +1,39 @@
-import { exec } from "child_process";
+import fetch from "node-fetch";
 
 export const runAgent = async (url, goal) => {
 
-  return new Promise((resolve) => {
+  try {
 
-    const command = `curl -X POST "https://agent.tinyfish.ai/v1/automation/run-sse" -H "X-API-Key: ${process.env.TINYFISH_API_KEY}" -H "Content-Type: application/json" -d "{\\"url\\":\\"${url}\\",\\"goal\\":\\"${goal}\\"}"`;
-
-    exec(command, (error, stdout, stderr) => {
-
-      if (error) {
-        resolve({
-          status: "error",
-          message: error.message
-        });
-        return;
+    const response = await fetch(
+      "https://agent.tinyfish.ai/v1/automation/run-sse",
+      {
+        method: "POST",
+        headers: {
+          "X-API-Key": process.env.TINYFISH_API_KEY,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          url: url,
+          goal: goal
+        })
       }
+    );
 
-      resolve({
-        status: "success",
-        agent: "TinyFish Autonomous Web Agent",
-        rawOutput: stdout
-      });
+    const data = await response.text();
 
-    });
+    return {
+      status: "success",
+      agent: "TinyFish Autonomous Web Agent",
+      rawOutput: data
+    };
 
-  });
+  } catch (error) {
+
+    return {
+      status: "error",
+      message: error.message
+    };
+
+  }
 
 };

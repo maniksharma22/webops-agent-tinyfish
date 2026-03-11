@@ -1,16 +1,35 @@
 # WebOps Agent — Autonomous Web Task Executor
 
-WebOps Agent is an AI-powered automation platform that allows an autonomous agent to navigate real websites and perform multi-step tasks. The project is built using the TinyFish Web Agent API and demonstrates how AI agents can interact with live web interfaces to complete tasks that normally require manual work.
+WebOps Agent is an AI-powered automation platform that allows an autonomous agent to navigate real websites and perform multi-step tasks automatically.
 
-This project was developed for the TinyFish $2M Pre-Accelerator Hackathon.
+The system uses the **TinyFish Web Agent API** to demonstrate how AI agents can interact with live web interfaces, execute workflows, and extract structured information.
+
+This project was built for the **TinyFish $2M Pre-Accelerator Hackathon**.
+
+---
+
+## Live Demo
+
+Frontend
+https://webops-agent-tinyfish.vercel.app
+
+Backend API
+https://webops-agent-tinyfish-production.up.railway.app
 
 ---
 
 ## Overview
 
-Most AI tools today generate text or analyze data but cannot actually perform work on the web. WebOps Agent bridges this gap by enabling an AI agent to browse websites, execute workflows, and extract useful information automatically.
+Most AI tools today generate text or analyze data, but they cannot actually **perform tasks on the web**.
 
-The agent can open websites, navigate pages, and perform structured tasks while displaying the execution timeline in a visual dashboard.
+WebOps Agent bridges this gap by enabling an AI agent to:
+
+* Open websites
+* Navigate through pages
+* Perform multi-step actions
+* Extract useful information
+
+The system displays the entire execution process in a **visual dashboard**, making AI behavior transparent and easy to understand.
 
 ---
 
@@ -19,7 +38,7 @@ The agent can open websites, navigate pages, and perform structured tasks while 
 * Autonomous web agent powered by TinyFish API
 * Multi-step task execution on real websites
 * Interactive dashboard showing agent activity
-* Live timeline of actions performed by the AI agent
+* Real-time timeline of agent actions
 * Floating contextual cards during agent execution
 * Clean and responsive UI
 
@@ -40,23 +59,25 @@ These examples demonstrate how AI agents can automate repetitive web workflows.
 
 ## Tech Stack
 
-Frontend
-React (Vite)
-JavaScript
-CSS
+### Frontend
 
-Backend
-Node.js
-Express.js
+* React (Vite)
+* JavaScript
+* CSS
 
-AI Infrastructure
-TinyFish Web Agent API
+### Backend
+
+* Node.js
+* Express.js
+
+### AI Infrastructure
+
+* TinyFish Web Agent API
 
 ---
 
 ## Project Structure
 
-```
 webops-agent-tinyfish
 │
 ├── backend
@@ -74,7 +95,6 @@ webops-agent-tinyfish
 │
 ├── .gitignore
 └── README.md
-```
 
 ---
 
@@ -82,80 +102,59 @@ webops-agent-tinyfish
 
 ### 1. Clone the Repository
 
-```
 git clone https://github.com/maniksharma22/webops-agent-tinyfish.git
 cd webops-agent-tinyfish
-```
 
 ---
 
 ### 2. Backend Setup
 
-```
 cd backend
 npm install
-```
 
-Create a `.env` file inside the backend folder:
+Create a `.env` file:
 
-```
 TINYFISH_API_KEY=your_api_key_here
 PORT=3000
-```
 
-Run the backend server:
+Run the backend:
 
-```
 npm start
-```
 
 ---
 
 ### 3. Frontend Setup
 
-Open another terminal and run:
+Open a new terminal:
 
-```
 cd frontend
 npm install
 npm run dev
-```
 
-The frontend will run at:
+Frontend will run at:
 
-```
 http://localhost:5173
-```
 
 ---
 
 ## Deployment
 
-The project can be deployed using the following platforms:
-
 Frontend
-Deploy using Vercel
+Deploy using **Vercel**
 
 Backend
-Deploy using Railway or Render
+Deploy using **Railway**
 
-After deployment, update the frontend API URL to connect with the deployed backend.
+After deployment, update the frontend API endpoint to point to the deployed backend.
 
 ---
 
 ## How It Works
 
-1. The user enters a website and a task description.
-2. The backend sends this request to the TinyFish Web Agent API.
+1. User enters a website and a task description.
+2. Backend sends the request to the TinyFish Web Agent API.
 3. The AI agent navigates the website and performs the requested workflow.
-4. The dashboard displays the agent’s activity timeline in real time.
-
----
-
-## Demo
-
-Demo Video Link
-(Add your demo video or tweet link here)
+4. The dashboard visualizes the agent’s actions step-by-step.
 
 ---
 
@@ -168,4 +167,4 @@ Computer Science Engineer
 
 ## Acknowledgement
 
-This project was built using the TinyFish Web Agent API as part of the TinyFish Pre-Accelerator Hackathon.
+This project was developed using the **TinyFish Web Agent API** as part of the **TinyFish Pre-Accelerator Hackathon**.

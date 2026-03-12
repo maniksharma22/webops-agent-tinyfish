@@ -56,7 +56,7 @@ function App() {
           return null
         }
 
-      }).filter(Boolean)
+  }).filter(step => step && step.trim() !== "")
 
   }
 

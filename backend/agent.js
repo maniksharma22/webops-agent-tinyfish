@@ -5,7 +5,7 @@ export const runAgent = async (url, goal) => {
   try {
 
     const response = await fetch(
-      "https://agent.tinyfish.ai/v1/automation/run",
+      "https://agent.tinyfish.ai/v1/automation/run-sse",
       {
         method: "POST",
         headers: {

@@ -248,11 +248,13 @@ function App() {
 
           <div className="steps-container">
 
-            {visibleSteps.map((step, i) => (
+         {visibleSteps
+            .filter(step => step && step.trim() !== "")
+            .map((step, i) => (
               <div key={i} className="step">
                 ● {step}
               </div>
-            ))}
+          ))}
 
             {result?.error && (
               <p className="error">{result.error}</p>

@@ -72,7 +72,9 @@ function App() {
 
     const interval = setInterval(() => {
 
-      setVisibleSteps(prev => [...prev, steps[i]])
+      if (steps[i]) {
+         setVisibleSteps(prev => [...prev, steps[i]])
+      }
       i++
 
       /* hide cards when real steps begin */

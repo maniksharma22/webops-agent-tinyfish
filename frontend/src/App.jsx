@@ -45,6 +45,7 @@ const runAgent = async () => {
 
 
     const text = await response.text();
+    console.log(text);
     const lines = text.split("\n");
     if (!text) {
       setLoading(false);

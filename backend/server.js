@@ -1,7 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import compression from "compression";
 import { runAgentStream } from "./agent.js";
 
 dotenv.config();
@@ -9,15 +8,14 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors({
-  origin: "*"
-}));
-
-app.use(compression());
+app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("WebOps Agent Server Running");
+app.options("*", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.sendStatus(200);
 });
 
 app.post("/run-agent-stream", async (req, res) => {
@@ -35,13 +33,16 @@ app.post("/run-agent-stream", async (req, res) => {
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Headers", "*");
 
   res.flushHeaders();
 
   await runAgentStream(url, goal, res);
 });
 
+app.get("/", (req, res) => {
+  res.send("Server running");
+});
+
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log("Server started");
 });

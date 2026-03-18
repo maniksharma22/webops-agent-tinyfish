@@ -46,7 +46,10 @@ const runAgent = async () => {
 
     const text = await response.text();
     console.log(text);
-    const lines = text.split("\n");
+    const parsed = JSON.parse(text);
+    const innerText = parsed.result;
+    const lines = innerText.split("\n");
+    
     if (!text) {
       setLoading(false);
       return;

@@ -14,6 +14,11 @@ export const runAgent = async (url, goal, onData) => {
       }
     );
 
+    if (!response.body) {
+      if (onData) onData({ error: "No response body" });
+      return;
+    }
+
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
 
@@ -32,7 +37,7 @@ export const runAgent = async (url, goal, onData) => {
         if (line.startsWith("data: ")) {
           try {
             const json = JSON.parse(line.replace("data: ", ""));
-            if (onData) onData(json); 
+            if (onData) onData(json);
           } catch {}
         }
       }

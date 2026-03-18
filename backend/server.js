@@ -55,25 +55,8 @@ app.post("/run-agent-stream", async (req, res) => {
 
   try {
 
-    res.write(`data: ${JSON.stringify({ purpose: "Connecting..." })}\n\n`);
-    await new Promise(r => setTimeout(r, 800));
-
-    res.write(`data: ${JSON.stringify({ purpose: "Initializing..." })}\n\n`);
-    await new Promise(r => setTimeout(r, 800));
-
-    res.write(`data: ${JSON.stringify({ purpose: "Analyzing..." })}\n\n`);
-    await new Promise(r => setTimeout(r, 800));
-
-    res.write(`data: ${JSON.stringify({ purpose: "Extracting..." })}\n\n`);
-    await new Promise(r => setTimeout(r, 800));
-
     await runAgent(url, goal, (data) => {
-      if (data?.result || data?.output) {
-        res.write(`data: ${JSON.stringify({
-          purpose: "Result",
-          result: data.result || data.output
-        })}\n\n`);
-      }
+      res.write(`data: ${JSON.stringify(data)}\n\n`);
     });
 
     res.end();

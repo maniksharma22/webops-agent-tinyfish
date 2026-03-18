@@ -9,251 +9,199 @@ function App() {
   const [sitePreview, setSitePreview] = useState("generic")
   const [visibleSteps, setVisibleSteps] = useState([])
   const [showCards, setShowCards] = useState(false)
+const loadingMessages = [
+  "Connecting AI agent to live web...",
+  "Initializing browser...",
+  "Analyzing website...",
+  "Extracting data..."
+]
 
-  const loadingMessages = [
-    "Connecting AI agent to live web...",
-    "Initializing browser...",
-    "Analyzing website...",
-    "Extracting data..."
-  ]
+const [currentMsg, setCurrentMsg] = useState(0)
 
-  const [currentMsg, setCurrentMsg] = useState(0)
+const runAgent = async () => {
+  try {
+    if (!url || !goal) {
+      alert("Please enter website and goal first❗")
+      return
+    }
 
-  const runAgent = async () => {
-    try {
-      if (!url || !goal) {
-        alert("Please enter website and goal first❗")
-        return
-      }
+    setLoading(true);
+    setVisibleSteps([]);
+    setShowCards(true);
+    setResult(null);
+    setCurrentMsg(0);
 
-      setLoading(true);
-      setVisibleSteps([]);
-      setShowCards(true);
-      setResult(null);
-      setCurrentMsg(0);
+    const response = await fetch("https://webops-agent-tinyfish-production.up.railway.app/run-agent-stream", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ url, goal })
+    });
 
-      const response = await fetch("https://webops-agent-tinyfish-production.up.railway.app/run-agent-stream", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ url, goal })
-      });
+    if (!response.ok) {
+      throw new Error("Server error");
+    }
 
-      if (!response.ok) {
-        throw new Error("Server error");
-      }
+    if (!response.body) {
+      throw new Error("No response body");
+    }
 
-      if (!response.body) {
-        throw new Error("No response body");
-      }
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
 
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
+    let buffer = "";
 
-      let buffer = "";
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
+      buffer += decoder.decode(value, { stream: true });
 
-        buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop();
 
-        const lines = buffer.split("\n");
-        buffer = lines.pop();
+      for (let line of lines) {
+        if (line.startsWith("data: ")) {
+          const raw = line.replace("data: ", "");
 
-        for (let line of lines) {
-          if (line.startsWith("data: ")) {
-            try {
-              const json = JSON.parse(line.replace("data: ", ""));
-              if (json.result || json.output) {
-                  setResult(json.result || json.output);
-                  setTimeout(() => {
-                  setLoading(false);
-              }, 1000);
-                
-            }
-            } catch {}
+          if (raw && raw !== "[DONE]") {
+            setResult(prev => prev ? prev + raw : raw);
           }
         }
       }
-
-      setLoading(false);
-
-    } catch (error) {
-      setResult({ error: error.message });
-      setLoading(false);
-      setShowCards(false);
     }
-  };
 
-  const parseSteps = () => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
 
-    if (!result?.rawOutput) return []
-
-    return result.rawOutput
-      .split("\n")
-      .filter(line => line.includes("PROGRESS") || line.includes("STARTED"))
-      .map(line => {
-        try {
-          const json = JSON.parse(line.replace("data: ", ""))
-          return json.purpose || json.type
-        } catch {
-          return null
-        }
-      })
-      .filter(step => step && step.trim() !== "")
+  } catch (error) {
+    setResult({ error: error.message });
+    setLoading(false);
+    setShowCards(false);
   }
+};
 
-  useEffect(() => {
+useEffect(() => {
 
-    if (!loading) return
+  if (!loading) return
 
-    const interval = setInterval(() => {
-      setCurrentMsg(prev => {
-        if (prev < loadingMessages.length - 1) return prev + 1;
-        return prev;
-      });
-    }, 1500)
+  const interval = setInterval(() => {
+    setCurrentMsg(prev => {
+      if (prev < loadingMessages.length - 1) return prev + 1;
+      return prev;
+    });
+  }, 1500)
 
-    return () => clearInterval(interval)
+  return () => clearInterval(interval)
 
-  }, [loading])
+}, [loading])
 
-  useEffect(() => {
+return (
 
-    const steps = parseSteps()
-    if (steps.length === 0) return
+  <div className="app">
 
-    let i = 0
+    <div className="header">
+      <h1>WebOps Agent</h1>
+      <p className="subtitle">
+        Autonomous AI Web Agent powered by TinyFish
+      </p>
+      <div className="ai-status">AI Agent Online</div>
+    </div>
 
-    const interval = setInterval(() => {
+    <div className="dashboard">
 
-      if (steps[i]) {
-        setVisibleSteps(prev => [...prev, steps[i]])
-      }
+      <div className="left-panel">
 
-      i++
+        <h3>Example Tasks</h3>
 
-      if (i === 1) {
-        setShowCards(false)
-        setLoading(false)
-      }
+        <button className="task-btn"
+          onClick={() => {
+            setUrl("https://amazon.com")
+            setGoal("Find top 5 laptops under $1000")
+            setSitePreview("amazon")
+          }}>
+          Amazon Laptop Search
+        </button>
 
-      if (i >= steps.length) {
-        clearInterval(interval)
-      }
+        <button className="task-btn"
+          onClick={() => {
+            setUrl("https://linkedin.com")
+            setGoal("Find Java developer jobs in India")
+            setSitePreview("linkedin")
+          }}>
+          LinkedIn Jobs
+        </button>
 
-    }, 800)
+        <button className="task-btn"
+          onClick={() => {
+            setUrl("https://github.com")
+            setGoal("Find trending AI repositories")
+            setSitePreview("github")
+          }}>
+          GitHub AI Repos
+        </button>
 
-    return () => clearInterval(interval)
+        <h4>Website</h4>
 
-  }, [result])
+        <input
+          value={url}
+          placeholder="Enter website..."
+          onChange={(e) => setUrl(e.target.value)}
+        />
 
-  return (
+        <h4>Agent Goal</h4>
 
-    <div className="app">
+        <textarea
+          value={goal}
+          placeholder="Describe the task..."
+          onChange={(e) => setGoal(e.target.value)}
+        />
 
-      <div className="header">
-        <h1>WebOps Agent</h1>
-        <p className="subtitle">
-          Autonomous AI Web Agent powered by TinyFish
-        </p>
-        <div className="ai-status">AI Agent Online</div>
+        <button className="run-btn" onClick={runAgent}>
+          Run Autonomous Agent
+        </button>
+
       </div>
 
-      <div className="dashboard">
+      <div className="right-panel">
 
-        <div className="left-panel">
-
-          <h3>Example Tasks</h3>
-
-          <button className="task-btn"
-            onClick={() => {
-              setUrl("https://amazon.com")
-              setGoal("Find top 5 laptops under $1000")
-              setSitePreview("amazon")
-            }}>
-            Amazon Laptop Search
-          </button>
-
-          <button className="task-btn"
-            onClick={() => {
-              setUrl("https://linkedin.com")
-              setGoal("Find Java developer jobs in India")
-              setSitePreview("linkedin")
-            }}>
-            LinkedIn Jobs
-          </button>
-
-          <button className="task-btn"
-            onClick={() => {
-              setUrl("https://github.com")
-              setGoal("Find trending AI repositories")
-              setSitePreview("github")
-            }}>
-            GitHub AI Repos
-          </button>
-
-          <h4>Website</h4>
-
-          <input
-            value={url}
-            placeholder="Enter website..."
-            onChange={(e) => setUrl(e.target.value)}
-          />
-
-          <h4>Agent Goal</h4>
-
-          <textarea
-            value={goal}
-            placeholder="Describe the task..."
-            onChange={(e) => setGoal(e.target.value)}
-          />
-
-          <button className="run-btn" onClick={runAgent}>
-            Run Autonomous Agent
-          </button>
-
-        </div>
-
-        <div className="right-panel">
-
-          {showCards && (
-            <div className="floating-container">
-              <div className="floating-card">AI Web Data</div>
-              <div className="floating-card second">Automation</div>
-            </div>
-          )}
-
-          <h3>Agent Activity</h3>
-
-          {loading && visibleSteps.length === 0 && (
-            <div className="loading">
-              <div className="connection-loader">
-                <div className="dot"></div>
-                <div className="dot"></div>
-                <div className="dot"></div>
-              </div>
-              <p>{loadingMessages[currentMsg]}</p>
-            </div>
-          )}
-
-          <div className="steps-container">
-
-            {visibleSteps.map((step, i) => (
-              <div key={i} className="step">
-                ● {step}
-              </div>
-            ))}
-
-            {result?.error && (
-              <p className="error">{result.error}</p>
-            )}
-
+        {showCards && (
+          <div className="floating-container">
+            <div className="floating-card">AI Web Data</div>
+            <div className="floating-card second">Automation</div>
           </div>
+        )}
+
+        <h3>Agent Activity</h3>
+
+        {loading && (
+          <div className="loading">
+            <div className="connection-loader">
+              <div className="dot"></div>
+              <div className="dot"></div>
+              <div className="dot"></div>
+            </div>
+            <p>{loadingMessages[currentMsg]}</p>
+          </div>
+        )}
+
+        <div className="steps-container">
+
+          {result && (
+            <div className="step">
+              {result}
+            </div>
+          )}
+
+          {result?.error && (
+            <p className="error">{result.error}</p>
+          )}
+
         </div>
       </div>
+    </div>
       
       <style>{`
       

@@ -66,20 +66,13 @@ function App() {
           if (line.startsWith("data: ")) {
             try {
               const json = JSON.parse(line.replace("data: ", ""));
-              const step = json.purpose || json.type || json.message || "Processing...";
-
-              const step =
-                json.purpose ||
-                json.type ||
-                json.message ||
-                json.status;
-        
-              if (step) {
-                setVisibleSteps(prev => {
-                  if (prev.includes(step)) return prev;
-                  return [...prev, step];
-                });
-              }
+              if (json.result || json.output) {
+                  setResult(json.result || json.output);
+                  setTimeout(() => {
+                  setLoading(false);
+              }, 1000);
+                
+            }
             } catch {}
           }
         }

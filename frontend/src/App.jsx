@@ -43,10 +43,13 @@ const runAgent = async () => {
       throw new Error("Server error");
     }
 
-    const data = await response.text();
 
     const text = await response.text();
     const lines = text.split("\n");
+    if (!text) {
+      setLoading(false);
+      return;
+    }
 
     let steps = [];
     
@@ -62,22 +65,25 @@ const runAgent = async () => {
         } catch {}
       }
     }
+    if (steps.length === 0) {
+      setLoading(false);
+      return;
+    }
     
     let i = 0;
     
-    const interval = setInterval(() => {
-      if (steps[i]) {
-        setVisibleSteps(prev => [...prev, steps[i]]);
-      }
-    
-      i++;
-    
-      if (i >= steps.length) {
-        clearInterval(interval);
-        setLoading(false);
-      }
-    
-    }, 700);
+  const interval = setInterval(() => {
+    if (steps[i]) {
+      setVisibleSteps(prev => [...prev, steps[i]]);
+    }
+  
+    i++;
+  
+    if (i >= steps.length) {
+      clearInterval(interval);
+      setLoading(false);
+    }
+  }, 700);
 
   } catch (error) {
     setResult({ error: error.message });

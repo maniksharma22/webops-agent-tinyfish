@@ -35,7 +35,9 @@ function App() {
 
     }
 
-    setLoading(false)
+    if (i === 1) {
+     setShowCards(false)
+     setLoading(false)
 
   }
 

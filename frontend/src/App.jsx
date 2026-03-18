@@ -18,74 +18,75 @@ function App() {
   ]
 
   const [currentMsg, setCurrentMsg] = useState(0)
+
   const runAgent = async () => {
-  try {
-    if (!url || !goal) {
-      alert("Please enter website and goal first❗");
-      return;
-    }
+    try {
+      if (!url || !goal) {
+        alert("Please enter website and goal first❗")
+        return
+      }
 
-    setLoading(true);
-    setVisibleSteps([]);
-    setShowCards(true);
-    setResult(null);
-    setCurrentMsg(0);
+      setLoading(true);
+      setVisibleSteps([]);
+      setShowCards(true);
+      setResult(null);
+      setCurrentMsg(0);
 
-    const response = await fetch("https://webops-agent-tinyfish-production.up.railway.app/run-agent", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ url, goal })
-    });
+      const response = await fetch("https://webops-agent-tinyfish-production.up.railway.app/run-agent-stream", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ url, goal })
+      });
 
-    if (!response.ok) {
-      throw new Error("Server error");
-    }
+      if (!response.ok) {
+        throw new Error("Server error");
+      }
 
-    if (!response.body) {
-      throw new Error("No response body");
-    }
+      if (!response.body) {
+        throw new Error("No response body");
+      }
 
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
 
-    let buffer = "";
+      let buffer = "";
 
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
 
-      buffer += decoder.decode(value, { stream: true });
+        buffer += decoder.decode(value, { stream: true });
 
-      const lines = buffer.split("\n");
-      buffer = lines.pop();
+        const lines = buffer.split("\n");
+        buffer = lines.pop();
 
-      for (let line of lines) {
-        if (line.startsWith("data: ")) {
-          try {
-            const json = JSON.parse(line.replace("data: ", ""));
-            const step = json.purpose || json.type;
+        for (let line of lines) {
+          if (line.startsWith("data: ")) {
+            try {
+              const json = JSON.parse(line.replace("data: ", ""));
+              const step = json.purpose || json.type;
 
-            if (step) {
-              setVisibleSteps(prev =>
-                prev.includes(step) ? prev : [...prev, step]
-              );
-              setShowCards(false);
-            }
-          } catch {}
+              if (step) {
+                setVisibleSteps(prev => {
+                  if (prev.includes(step)) return prev;
+                  return [...prev, step];
+                });
+              }
+            } catch {}
+          }
         }
       }
+
+      setLoading(false);
+
+    } catch (error) {
+      setResult({ error: error.message });
+      setLoading(false);
+      setShowCards(false);
     }
-
-    setLoading(false);
-
-  } catch (error) {
-    setResult({ error: error.message });
-    setLoading(false);
-    setShowCards(false);
-  }
-};
+  };
 
   const parseSteps = () => {
 
@@ -113,7 +114,7 @@ function App() {
       setCurrentMsg(prev => {
         if (prev < loadingMessages.length - 1) return prev + 1;
         return prev;
-    });
+      });
     }, 1500)
 
     return () => clearInterval(interval)
@@ -254,8 +255,6 @@ function App() {
           </div>
         </div>
       </div>
-
-
       
       <style>{`
       

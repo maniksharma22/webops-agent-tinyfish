@@ -8,19 +8,16 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// middleware
 app.use(cors({
   origin: "https://webops-agent-tinyfish.vercel.app"
 }));
 
 app.use(express.json());
 
-// test route
 app.get("/", (req, res) => {
   res.send("WebOps Agent Server Running");
 });
 
-// run agent
 app.post("/run-agent", async (req, res) => {
   try {
 
@@ -47,7 +44,6 @@ app.post("/run-agent", async (req, res) => {
   }
 });
 
-// start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

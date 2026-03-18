@@ -1,31 +1,39 @@
 import fetch from "node-fetch";
 
-export const runAgentStream = async (url, goal, res) => {
+export const runAgent = async (url, goal) => {
 
-  const response = await fetch(
-    "https://agent.tinyfish.ai/v1/automation/run-sse",
-    {
-      method: "POST",
-      headers: {
-        "X-API-Key": process.env.TINYFISH_API_KEY,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ url, goal })
-    }
-  );
+  try {
 
-  const reader = response.body.getReader();
-  const decoder = new TextDecoder();
+    const response = await fetch(
+      "https://agent.tinyfish.ai/v1/automation/run-sse",
+      {
+        method: "POST",
+        headers: {
+          "X-API-Key": process.env.TINYFISH_API_KEY,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          url: url,
+          goal: goal
+        })
+      }
+    );
 
-  while (true) {
-    const { done, value } = await reader.read();
+    const data = await response.text();
 
-    if (done) break;
+    return {
+      status: "success",
+      agent: "TinyFish Autonomous Web Agent",
+      rawOutput: data
+    };
 
-    const chunk = decoder.decode(value);
+  } catch (error) {
 
-    res.write(chunk); 
+    return {
+      status: "error",
+      message: error.message
+    };
+
   }
 
-  res.end();
 };

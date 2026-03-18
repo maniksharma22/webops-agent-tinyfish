@@ -31,7 +31,7 @@ function App() {
     setResult(null);
     setCurrentMsg(0);
 
-    const response = await fetch("https://webops-agent-tinyfish-production.up.railway.app/run-agent-stream", {
+    const response = await fetch("http://localhost:3000/run-agent", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

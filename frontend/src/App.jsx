@@ -43,34 +43,9 @@ const runAgent = async () => {
       throw new Error("Server error");
     }
 
-    if (!response.body) {
-      throw new Error("No response body");
-    }
+    const data = await response.text();
 
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-
-    let buffer = "";
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      buffer += decoder.decode(value, { stream: true });
-
-      const lines = buffer.split("\n");
-      buffer = lines.pop();
-
-      for (let line of lines) {
-        if (line.startsWith("data: ")) {
-          const raw = line.replace("data: ", "");
-
-          if (raw && raw !== "[DONE]") {
-            setResult(prev => prev ? prev + raw : raw);
-          }
-        }
-      }
-    }
+    setResult(data);
 
     setTimeout(() => {
       setLoading(false);

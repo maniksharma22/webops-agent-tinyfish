@@ -71,7 +71,10 @@ function App() {
     if (!loading) return
 
     const interval = setInterval(() => {
-      setCurrentMsg(prev => (prev + 1) % loadingMessages.length)
+      setCurrentMsg(prev => {
+        if (prev < loadingMessages.length - 1) return prev + 1;
+        return prev;
+    });
     }, 1500)
 
     return () => clearInterval(interval)

@@ -45,30 +45,34 @@ const runAgent = async () => {
 
 
     const text = await response.text();
-    console.log(text);
-    const parsed = JSON.parse(text);
-    const innerText = parsed.result;
+    const cleanText = text.replace(/^data:\s*/, "");
+    const outerJson = JSON.parse(cleanText);
+    const innerText = outerJson.result;
     const lines = innerText.split("\n");
     
-    if (!text) {
-      setLoading(false);
-      return;
-    }
-
     let steps = [];
     
     for (let line of lines) {
-      if (line.startsWith("data: ")) {
-        try {
-          const json = JSON.parse(line.replace("data: ", ""));
+      const cleanLine = line.trim();
     
-          if (json.purpose) {
+      if (cleanLine.startsWith("data:")) {
+        try {
+          const json = JSON.parse(cleanLine.replace("data:", "").trim());
+    
+          if (json.type === "PROGRESS" && json.purpose) {
             steps.push(json.purpose);
+          }
+    
+        
+          if (json.type === "COMPLETE") {
+            console.log("FINAL RESULT:", json.result);
           }
     
         } catch {}
       }
     }
+    
+   
     if (steps.length === 0) {
       setLoading(false);
       return;

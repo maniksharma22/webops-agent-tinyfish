@@ -45,11 +45,39 @@ const runAgent = async () => {
 
     const data = await response.text();
 
-    setResult(data);
+    const text = await response.text();
+    const lines = text.split("\n");
 
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    let steps = [];
+    
+    for (let line of lines) {
+      if (line.startsWith("data: ")) {
+        try {
+          const json = JSON.parse(line.replace("data: ", ""));
+    
+          if (json.purpose) {
+            steps.push(json.purpose);
+          }
+    
+        } catch {}
+      }
+    }
+    
+    let i = 0;
+    
+    const interval = setInterval(() => {
+      if (steps[i]) {
+        setVisibleSteps(prev => [...prev, steps[i]]);
+      }
+    
+      i++;
+    
+      if (i >= steps.length) {
+        clearInterval(interval);
+        setLoading(false);
+      }
+    
+    }, 700);
 
   } catch (error) {
     setResult({ error: error.message });
@@ -164,11 +192,11 @@ return (
 
         <div className="steps-container">
 
-          {result && (
-            <div className="step">
-              {result}
-            </div>
-          )}
+        {visibleSteps.map((step, i) => (
+          <div key={i} className="step">
+            ● {step}
+          </div>
+        ))}
 
           {result?.error && (
             <p className="error">{result.error}</p>

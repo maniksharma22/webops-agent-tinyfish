@@ -10,8 +10,21 @@ function App() {
   const [visibleSteps, setVisibleSteps] = useState([])
   const [showCards, setShowCards] = useState(false)
 
+  const loadingMessages = [
+    "Connecting AI agent to live web...",
+    "Initializing browser...",
+    "Analyzing website...",
+    "Extracting data..."
+  ]
+
+  const [currentMsg, setCurrentMsg] = useState(0)
 
   const runAgent = async () => {
+
+    if (!url || !goal) {
+      alert("Please enter website and goal first ❗")
+      return
+    }
 
     setLoading(true)
     setShowCards(true)
@@ -27,16 +40,13 @@ function App() {
       })
 
       const data = await response.json()
-      console.log(data) // DEBUG
       setResult(data)
 
     } catch {
       setResult({ error: "Agent failed to run" })
     }
 
-    // ❌ removed setLoading(false)
   }
-
 
   const parseSteps = () => {
 
@@ -56,6 +66,17 @@ function App() {
       .filter(step => step && step.trim() !== "")
   }
 
+  useEffect(() => {
+
+    if (!loading) return
+
+    const interval = setInterval(() => {
+      setCurrentMsg(prev => (prev + 1) % loadingMessages.length)
+    }, 1500)
+
+    return () => clearInterval(interval)
+
+  }, [loading])
 
   useEffect(() => {
 
@@ -74,7 +95,7 @@ function App() {
 
       if (i === 1) {
         setShowCards(false)
-        setLoading(false) // ✅ STOP loading when steps begin
+        setLoading(false)
       }
 
       if (i >= steps.length) {
@@ -86,7 +107,6 @@ function App() {
     return () => clearInterval(interval)
 
   }, [result])
-
 
   return (
 
@@ -155,7 +175,6 @@ function App() {
 
         </div>
 
-
         <div className="right-panel">
 
           {showCards && (
@@ -167,7 +186,6 @@ function App() {
 
           <h3>Agent Activity</h3>
 
-          {/* ✅ FIXED LOADING */}
           {loading && visibleSteps.length === 0 && (
             <div className="loading">
               <div className="connection-loader">
@@ -175,7 +193,7 @@ function App() {
                 <div className="dot"></div>
                 <div className="dot"></div>
               </div>
-              <p>Connecting AI agent to live web...</p>
+              <p>{loadingMessages[currentMsg]}</p>
             </div>
           )}
 
@@ -192,13 +210,278 @@ function App() {
             )}
 
           </div>
-
         </div>
-
       </div>
 
-    </div>
+
+      
+      <style>{`
+      
+        body{
+        margin:0;
+        background:#0f172a;
+        font-family:Inter,sans-serif;
+        overflow-x:hidden;
+        }
+        
+        .app{
+        min-height:100vh;
+        color:white;
+        }
+        
+        .header{
+        padding:30px 50px;
+        }
+        
+        .subtitle{
+        color:#94a3b8;
+        margin-top:4px;
+        }
+        
+        .ai-status{
+        margin-top:10px;
+        display:inline-block;
+        padding:4px 12px;
+        border-radius:20px;
+        background:#1e293b;
+        border:1px solid #334155;
+        color:#38bdf8;
+        font-size:12px;
+        }
+        
+        .dashboard{
+        display:grid;
+        grid-template-columns:380px 1350px;
+        gap:30px;
+        padding:0 50px 40px 50px;
+        }
+        
+        
+        /* LEFT PANEL */
+        
+        .left-panel{
+        background:#1e293b;
+        padding:22px;
+        border-radius:10px;
+        display:flex;
+        flex-direction:column;
+        gap:12px;
+        }
+        
+        .left-panel h4{
+        margin-top:10px;
+        }
+        
+        input,textarea{
+        width:100%;
+        padding:10px 12px;
+        border-radius:6px;
+        border:none;
+        background:#020617;
+        color:white;
+        box-sizing:border-box;
+        }
+        
+        textarea{
+        height:90px;
+        resize:none;
+        }
+        
+        .task-btn{
+        background:#020617;
+        border:none;
+        color:white;
+        padding:10px;
+        border-radius:6px;
+        cursor:pointer;
+        }
+        
+        .task-btn:hover{
+        background:#0f172a;
+        }
+        
+        .run-btn{
+        margin-top:10px;
+        padding:12px;
+        border:none;
+        border-radius:6px;
+        background:#3b82f6;
+        color:white;
+        cursor:pointer;
+        }
+        
+        .run-btn:hover{
+        background:#2563eb;
+        }
+        
+        
+        /* RIGHT PANEL */
+        
+        .right-panel{
+        background:#1e293b;
+        padding:22px;
+        border-radius:10px;
+        width:1350px;
+        height:calc(100vh - 150px);
+        position:relative;
+        overflow:hidden;
+        }
+        
+        
+        /* FLOATING CARDS */
+        
+        .floating-container{
+        position:absolute;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        pointer-events:none;
+        }
+        
+        .floating-card{
+        position:absolute;
+        width:260px;
+        height:120px;
+        border-radius:12px;
+        background:rgba(255,255,255,0.04);
+        // backdrop-filter:blur(18px);
+        // filter:blur(1px);
+        opacity:.28;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:14px;
+        opacity:.35;
+        animation:float 10s infinite ease-in-out;
+        transform:rotate(-8deg);
+        }
+        
+        .floating-card.second{
+        top:260px;
+        right:120px;
+        transform:rotate(7deg);
+        animation-delay:2s;
+        }
+        
+        
+        .floating-card:first-child{
+        top:80px;
+        left:200px;
+        }
+        
+        .linkedin{border:1px solid #0a66c2;color:#0a66c2;}
+        .github{border:1px solid white;color:white;}
+        .amazon{border:1px solid #ff9900;color:#ff9900;}
+        
+        @keyframes float{
+        
+        0%{
+        transform:translate(0px,0px) rotate(-8deg);
+        }
+        
+        25%{
+        transform:translate(25px,-20px) rotate(-6deg);
+        }
+        
+        50%{
+        transform:translate(-20px,-35px) rotate(-9deg);
+        }
+        
+        75%{
+        transform:translate(-25px,15px) rotate(-6deg);
+        }
+        
+        100%{
+        transform:translate(0px,0px) rotate(-8deg);
+        }
+        
+        }
+        
+        
+        /* STEPS */
+        
+        .steps-container{
+        margin-top:12px;
+        height:100%;
+        overflow-y:auto;
+        }
+        
+        .step{
+        padding:10px;
+        border-bottom:1px solid #334155;
+        animation:fadeIn .5s ease;
+        }
+        
+        @keyframes fadeIn{
+        from{opacity:0;transform:translateY(10px)}
+        to{opacity:1;transform:translateY(0)}
+        }
+        
+        
+        /* LOADER */
+        
+        .connection-loader{
+        display:flex;
+        gap:10px;
+        margin-top:10px;
+        }
+        
+        .dot{
+        width:12px;
+        height:12px;
+        background:#3b82f6;
+        border-radius:50%;
+        animation:pulse 1s infinite;
+        }
+        
+        .dot:nth-child(2){animation-delay:.2s}
+        .dot:nth-child(3){animation-delay:.4s}
+        
+        @keyframes pulse{
+        0%{transform:scale(.6);opacity:.4}
+        50%{transform:scale(1.2);opacity:1}
+        100%{transform:scale(.6);opacity:.4}
+        }
+        
+        .error{
+        color:#ff6b6b;
+        margin-top:10px;
+        }
+        
+        
+        /* RESPONSIVE */
+        
+        @media(max-width:1024px){
+        
+        .dashboard{
+        grid-template-columns:1fr;
+        }
+        
+        .right-panel{
+        width:100%;
+        height:auto;
+        }
+        
+        }
+        
+        @media(max-width:480px){
+        
+        .header{
+        padding:20px;
+        }
+        
+        .dashboard{
+        padding:0 20px 40px 20px;
+        }
+        
+        }
+        
+        `}
+      </style>
+        
+  </div>
+
   )
 }
-
 export default App

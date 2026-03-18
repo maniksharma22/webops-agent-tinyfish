@@ -22,31 +22,51 @@ function App() {
   const runAgent = async () => {
 
     if (!url || !goal) {
-      alert("Please enter website and goal first ❗")
+      alert("Please enter website and goal first❗")
       return
     }
+  setLoading(true);
+  setVisibleSteps([]);
+  setShowCards(true);
 
-    setLoading(true)
-    setShowCards(true)
-    setVisibleSteps([])
-    setResult(null)
+  const response = await fetch("https://webops-agent-tinyfish-production.up.railway.app/run-agent-stream", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ url, goal })
+  });
 
-    try {
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
 
-      const response = await fetch("https://webops-agent-tinyfish-production.up.railway.app/run-agent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url, goal })
-      })
+  let buffer = "";
 
-      const data = await response.json()
-      setResult(data)
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
 
-    } catch {
-      setResult({ error: "Agent failed to run" })
+    buffer += decoder.decode(value);
+
+    const lines = buffer.split("\n");
+
+    for (let line of lines) {
+      if (line.includes("data:")) {
+        try {
+          const json = JSON.parse(line.replace("data: ", ""));
+          const step = json.purpose || json.type;
+
+          if (step) {
+            setVisibleSteps(prev => [...prev, step]);
+            setShowCards(false);
+          }
+          } catch {}
+        }
+      }
     }
-
-  }
+  
+    setLoading(false);
+  };
 
   const parseSteps = () => {
 

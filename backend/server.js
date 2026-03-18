@@ -18,7 +18,6 @@ app.get("/", (req, res) => {
   res.send("WebOps Agent Server Running");
 });
 
-
 app.post("/run-agent", async (req, res) => {
   try {
     const { url, goal } = req.body;
@@ -45,20 +44,21 @@ app.post("/run-agent", async (req, res) => {
   }
 });
 
-
 app.post("/run-agent-stream", async (req, res) => {
 
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
+  res.flushHeaders();
 
   const { url, goal } = req.body;
 
   try {
-    await runAgent(url, goal, (data) => {
+    await runAgent(url, goal, async (data) => {
       res.write(`data: ${JSON.stringify(data)}\n\n`);
     });
 
+    res.write(`data: ${JSON.stringify({ purpose: "Completed" })}\n\n`);
     res.end();
 
   } catch (error) {
@@ -66,7 +66,6 @@ app.post("/run-agent-stream", async (req, res) => {
     res.end();
   }
 });
-
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

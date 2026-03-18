@@ -14,36 +14,15 @@ export const runAgent = async (url, goal, onData) => {
       }
     );
 
-    if (!response.body) {
-      if (onData) onData({ error: "No response body" });
-      return;
-    }
+    const text = await response.text();
 
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-
-    let buffer = "";
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      buffer += decoder.decode(value, { stream: true });
-
-      const lines = buffer.split("\n");
-      buffer = lines.pop();
-
-      for (let line of lines) {
-        if (line.startsWith("data: ")) {
-          try {
-            const json = JSON.parse(line.replace("data: ", ""));
-            if (onData) onData(json);
-          } catch {}
-        }
-      }
+    if (onData) {
+      onData({ result: text });
     }
 
   } catch (error) {
-    if (onData) onData({ error: error.message });
+    if (onData) {
+      onData({ error: error.message });
+    }
   }
 };

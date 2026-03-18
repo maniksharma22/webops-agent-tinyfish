@@ -36,34 +36,38 @@ function App() {
     },
     body: JSON.stringify({ url, goal })
   });
+  if (!response.ok) {
+  throw new Error("Server error");
+  }
 
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
 
   let buffer = "";
 
-  while (true) {
+   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
-
-    buffer += decoder.decode(value);
-
+  
+    buffer += decoder.decode(value, { stream: true });
+  
     const lines = buffer.split("\n");
-
+    buffer = lines.pop(); // keep incomplete line
+  
     for (let line of lines) {
-      if (line.includes("data:")) {
+      if (line.startsWith("data: ")) {
         try {
           const json = JSON.parse(line.replace("data: ", ""));
           const step = json.purpose || json.type;
-
+  
           if (step) {
             setVisibleSteps(prev => [...prev, step]);
             setShowCards(false);
           }
-          } catch {}
-        }
+        } catch {}
       }
     }
+  }
   
     setLoading(false);
   };

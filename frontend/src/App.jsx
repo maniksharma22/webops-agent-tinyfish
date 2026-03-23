@@ -45,13 +45,9 @@ const runAgent = async () => {
 
 
     const text = await response.text();
-    const cleanText = text.replace(/^data:\s*/, "");
-    const outerJson = JSON.parse(cleanText);
-    const innerText = outerJson.result;
-    const lines = innerText.split("\n");
     
     let steps = [];
-    
+  
     for (let line of lines) {
       const cleanLine = line.trim();
     
@@ -61,11 +57,6 @@ const runAgent = async () => {
     
           if (json.type === "PROGRESS" && json.purpose) {
             steps.push(json.purpose);
-          }
-    
-        
-          if (json.type === "COMPLETE") {
-            console.log("FINAL RESULT:", json.result);
           }
     
         } catch {}

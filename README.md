@@ -29,7 +29,7 @@ Frontend
 https://webops-agent-tinyfish.vercel.app
 
 Backend API  
-https://webops-agent-tinyfish-production.up.railway.app
+https://webops-agent-tinyfish-production-d02d.up.railway.app/
 
 ---
 

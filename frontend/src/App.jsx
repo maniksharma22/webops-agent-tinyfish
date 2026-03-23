@@ -44,46 +44,33 @@ const runAgent = async () => {
     }
 
 
-    const text = await response.text();
-    const lines = text.split("\n");
-    
-    let steps = [];
-  
-    for (let line of lines) {
-      const cleanLine = line.trim();
-    
-      if (cleanLine.startsWith("data:")) {
-        try {
-          const json = JSON.parse(cleanLine.replace("data:", "").trim());
-    
-          if (json.type === "PROGRESS" && json.purpose) {
-            steps.push(json.purpose);
-          }
-    
-        } catch {}
-      }
+ const reader = response.body.getReader();
+const decoder = new TextDecoder("utf-8");
+
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) break;
+
+  const chunk = decoder.decode(value);
+  const lines = chunk.split("\n");
+
+  for (let line of lines) {
+    if (line.startsWith("data:")) {
+      try {
+        const json = JSON.parse(line.replace("data:", "").trim());
+
+        if (json.type === "PROGRESS" && json.purpose) {
+          setVisibleSteps(prev => [...prev, json.purpose]);
+        }
+
+        if (json.type === "COMPLETE") {
+          setLoading(false);
+        }
+
+      } catch {}
     }
-    
-   
-    if (steps.length === 0) {
-      setLoading(false);
-      return;
-    }
-    
-    let i = 0;
-    
-  const interval = setInterval(() => {
-    if (steps[i]) {
-      setVisibleSteps(prev => [...prev, steps[i]]);
-    }
-  
-    i++;
-  
-    if (i >= steps.length) {
-      clearInterval(interval);
-      setLoading(false);
-    }
-  }, 700);
+  }
+}
 
   } catch (error) {
     setResult({ error: error.message });

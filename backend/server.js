@@ -6,11 +6,12 @@ import { runAgent } from "./agent.js";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-app.use(cors({
-  origin: "https://webops-agent-tinyfish.vercel.app"
-}));
+const PORT = process.env.PORT;
+
+app.set("trust proxy", 1);
+
+app.use(cors());
 
 app.use(express.json());
 
@@ -29,7 +30,7 @@ app.post("/run-agent", async (req, res) => {
       });
     }
 
-    await runAgent(url, goal, () => {}); 
+    await runAgent(url, goal, () => {});
 
     res.json({
       status: "success",
@@ -37,6 +38,7 @@ app.post("/run-agent", async (req, res) => {
     });
 
   } catch (error) {
+    console.error("Run Agent Error:", error);
     res.status(500).json({
       status: "error",
       message: error.message
@@ -45,7 +47,6 @@ app.post("/run-agent", async (req, res) => {
 });
 
 app.post("/run-agent-stream", async (req, res) => {
-
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
@@ -54,7 +55,6 @@ app.post("/run-agent-stream", async (req, res) => {
   const { url, goal } = req.body;
 
   try {
-
     await runAgent(url, goal, (data) => {
       res.write(`data: ${JSON.stringify(data)}\n\n`);
     });
@@ -62,6 +62,7 @@ app.post("/run-agent-stream", async (req, res) => {
     res.end();
 
   } catch (error) {
+    console.error("Stream Error:", error);
     res.write(`data: ${JSON.stringify({ error: error.message })}\n\n`);
     res.end();
   }

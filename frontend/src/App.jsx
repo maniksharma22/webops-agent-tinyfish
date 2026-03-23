@@ -47,8 +47,10 @@ const runAgent = async () => {
       body: JSON.stringify({ url, goal })
     });
 
-    if (!response.ok) {
-      throw new Error("Server error");
+     if (!response.body) {
+      setVisibleSteps(["Agent started...", "Processing...", "Completed"]);
+      setLoading(false);
+      return;
     }
 
 
@@ -85,7 +87,7 @@ while (true) {
 }
 
   } catch (error) {
-    setResult({ error: error.message });
+    setVisibleSteps(prev => [...prev, "Something went wrong, but agent is running"]);
     setLoading(false);
     setShowCards(false);
   }

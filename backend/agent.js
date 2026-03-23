@@ -14,13 +14,27 @@ export const runAgent = async (url, goal, onData) => {
       }
     );
 
-    const text = await response.text();
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status}`);
+    }
 
-    if (onData) {
-      onData({ result: text });
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder("utf-8");
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value, { stream: true });
+
+      if (onData) {
+        onData({ data: chunk });
+      }
     }
 
   } catch (error) {
+    console.error("Agent Error:", error);
+
     if (onData) {
       onData({ error: error.message });
     }

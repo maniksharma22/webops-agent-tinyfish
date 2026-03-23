@@ -45,6 +45,7 @@ const runAgent = async () => {
 
 
     const text = await response.text();
+    const lines = text.split("\n");
     
     let steps = [];
   

@@ -39,15 +39,6 @@ const runAgent = async () => {
         body: JSON.stringify({ url, goal })
     });
 
-    setTimeout(() => {
-      setLoading(false);
-      setVisibleSteps(prev => [
-        ...prev,
-        "Finalizing results...",
-        "Task completed"
-      ]);
-    }, 15000);
-
      if (!response.body) {
       setVisibleSteps(["Agent started...", "Processing...", "Completed"]);
       setLoading(false);
@@ -75,10 +66,6 @@ while (true) {
         if (json.type === "COMPLETE") {
          setVisibleSteps(prev => [...prev, "Task completed successfully"]);
          setLoading(false);
-        }
-
-        if (json.type === "COMPLETE") {
-          setLoading(false);
         }
 
       } catch {}

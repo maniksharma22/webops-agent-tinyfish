@@ -32,20 +32,21 @@ const runAgent = async () => {
     setCurrentMsg(0);
 
     const response = await fetch("https://webops-agent-tinyfish-production-d02d.up.railway.app/run-agent-stream", {
-        setTimeout(() => {
-        setLoading(false);
-        setVisibleSteps(prev => [
-          ...prev,
-          "Finalizing results...",
-          "Task completed"
-        ]);
-      }, 15000);
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ url, goal })
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ url, goal })
     });
+
+    setTimeout(() => {
+      setLoading(false);
+      setVisibleSteps(prev => [
+        ...prev,
+        "Finalizing results...",
+        "Task completed"
+      ]);
+    }, 15000);
 
      if (!response.body) {
       setVisibleSteps(["Agent started...", "Processing...", "Completed"]);
@@ -53,8 +54,7 @@ const runAgent = async () => {
       return;
     }
 
-
- const reader = response.body.getReader();
+const reader = response.body.getReader();
 const decoder = new TextDecoder("utf-8");
 
 while (true) {
